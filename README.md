@@ -1,13 +1,3 @@
-# [Convert to it!](https://convert.to.it/)
-**Truly universal online file converter.**
-
-Many online file conversion tools are **boring** and **insecure**. They only allow conversion between two formats in the same medium (images to images, videos to videos, etc.), and they require that you _upload your files to some server_.
-
-This is not just terrible for privacy, it's also incredibly lame. What if you _really_ need to convert an AVI video to a PDF document? Try to find an online tool for that, I dare you.
-
-[Convert.to.it](https://convert.to.it/) aims to be a tool that "just works". You're almost _guaranteed_ to get an output - perhaps not always the one you expected, but it'll try its best to not leave you hanging.
-
-For a semi-technical overview of this tool, check out the video: https://youtu.be/btUbcsTbVA8
 
 ## Usage
 
@@ -18,25 +8,6 @@ For a semi-technical overview of this tool, check out the video: https://youtu.b
 5. Click **Convert**!
 6. Hopefully, after a bit (or a lot) of thinking, the program will spit out the file you wanted. If not, see the "Issues" section below.
 
-## Issues
-
-Ever since the YouTube video released, we've been getting spammed with issues suggesting the addition of all kinds of niche file formats. To keep things organized, I've decided to specify what counts as a valid issue and what doesn't.
-
-> [!IMPORTANT]
-> **SIMPLY ASKING FOR A FILE FORMAT TO BE ADDED IS NOT A MEANINGFUL ISSUE!**
-
-There are thousands of file formats out there. It can take hours to add support for just one. The math is simple - we can't possibly support every single file. As such, simply listing your favorite file formats is not helpful. We already know that there are formats we don't support, we don't need tickets to tell us that.
-
-When suggesting a file format, you must _at minimum_:
-- Make sure that there isn't already an issue about the same thing, and that we don't already support the format.
-- Explain what you expect the conversion to be like (what medium is it converting to/from). It's important to note here that simply parsing the underlying data is _not sufficient_. Imagine if we only treated SVG images as raw XML data and didn't support converting them to raster images - that would defeat the point.
-- Provide links to existing browser-based solutions if possible, or at the very least a reference for implementing the format, and make sure the license is compatible with GPL-2.0.
-
-If this seems like a lot, please remember - a developer will have to do 100x more work to actually implement the format. Doing a bit of research not only saves them precious time, it also weeds out "unserious" proposals that would only bloat our to-do list.
-
-**If you're submitting a bug report,** you only need to do step 1 - check if the problem isn't already reported by someone else. Bug reports are generally quite important otherwise.
-
-Though please note, "converting X to Y doesn't work" is **not** a bug report.  However, "converting X to Y works but not how I expected" likely **is** a bug report.
 
 ## Deployment
 
@@ -75,70 +46,3 @@ docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.ym
 
 The first Docker build is expected to be slow because Chromium and related system packages are installed in the build stage (needed for puppeteer in `buildCache.js`). Later builds are usually much faster due to Docker layer caching.
 
-## Contributing
-
-The best way to contribute is by adding support for new file formats (duh). Here's how that works:
-
-### Creating a handler
-
-Each "tool" used for conversion has to be normalized to a standard form - effectively a "wrapper" that abstracts away the internal processes. These wrappers are available in [src/handlers](src/handlers/).
-
-Below is a super barebones handler that does absolutely nothing. You can use this as a starting point for adding a new format:
-
-```ts
-// file: dummy.ts
-
-import type { FileData, FileFormat, FormatHandler } from "../FormatHandler.ts";
-import CommonFormats from "src/CommonFormats.ts";
-
-class dummyHandler implements FormatHandler {
-
-  public name: string = "dummy";
-  public supportedFormats?: FileFormat[];
-  public ready: boolean = false;
-
-  async init () {
-    this.supportedFormats = [
-      // Example PNG format, with both input and output disabled
-      CommonFormats.PNG.builder("png")
-        .markLossless()
-        // .allowFrom()
-        // .allowTo()
-    ];
-    this.ready = true;
-  }
-
-  async doConvert (
-    inputFiles: FileData[],
-    inputFormat: FileFormat,
-    outputFormat: FileFormat
-  ): Promise<FileData[]> {
-    const outputFiles: FileData[] = [];
-    return outputFiles;
-  }
-
-}
-
-export default dummyHandler;
-```
-
-For more details on how all of these components work, refer to the doc comments in [src/FormatHandler.ts](src/FormatHandler.ts). You can also take a look at existing handlers to get a more practical example.
-
-There are a few additional things that I want to point out in particular:
-
-- Pay attention to the naming system. If your tool is called `dummy`, then the class should be called `dummyHandler`, and the file should be called `dummy.ts`.
-- The handler is responsible for setting the output file's name. This is done to allow for flexibility in rare cases where the _full_ file name matters. Of course, in most cases, you'll only have to swap the file extension.
-- The handler is also responsible for ensuring that any byte buffers that enter or exit the handler _do not get mutated_. If necessary, clone the buffer by wrapping it in `new Uint8Array()`.
-- When handling MIME types, run them through [normalizeMimeType](src/normalizeMimeType.ts) first. One file can have multiple valid MIME types, which isn't great when you're trying to match them algorithmically.
-- When implementing a new file format, please treat the file as the media that it represents, not the data that it contains. For example, if you were making an SVG handler, you should treat the file as an _image_, not as XML.
-
-### Adding dependencies
-
-If your tool requires an external dependency (which it likely does), there are currently two well-established ways of going about this:
-
-- If it's an `npm` package, just install it to the project like you normally would.
-- If it's a Git repository, add it as a submodule to [src/handlers](src/handlers).
-
-**Please try to avoid CDNs (Content Delivery Networks).** They're really cool on paper, but they don't work well with TypeScript, and each one introduces a tiny bit of instability. For a project that leans heavily on external dependencies, those bits of instability can add up fast.
-
-- If you need to load a WebAssembly binary (or similar), add its path to [vite.config.js](vite.config.js) and target it under `/convert/wasm/`. **Do not link to node_modules**.
