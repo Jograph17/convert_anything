@@ -1,4 +1,7 @@
-
+(for easy acces Joash -
+cd C:\Users\Joash\convert_anything
+bun install
+bunx vite)
 ## Usage
 
 1. Go to [convert.to.it](https://convert.to.it/)
