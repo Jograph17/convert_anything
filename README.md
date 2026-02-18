@@ -13,7 +13,7 @@
 
 ### Local development (Bun + Vite)
 
-1. Clone this repository ***WITH SUBMODULES***. You can use `git clone --recursive https://github.com/p2r3/convert` for that. Omitting submodules will leave you missing a few dependencies.
+1. Clone this repository ***WITH SUBMODULES***. You can use `git clone --recurse-submodules https://github.com/Jograph17/convert_anything.git` for that. Omitting submodules will leave you missing a few dependencies.
 2. Install [Bun](https://bun.sh/).
 3. Run `bun install` to install dependencies.
 4. Run `bunx vite` to start the development server.
