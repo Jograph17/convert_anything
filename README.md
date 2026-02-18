@@ -9,8 +9,7 @@ bunx vite)
 3. An input format should have been automatically selected. If it wasn't, yikes! Try searching for it, or if it's really not there, see the "Issues" section below.
 4. Select an output format from the second list. If you're on desktop, that's the one on the right side. If you're on mobile, it'll be somewhere lower down.
 5. Click **Convert**!
-6. Hopefully, after a bit (or a lot) of thinking, the program will spit out the file you wanted. If not, see the "Issues" section below.
-
+6. Hopefully, after a bit (or a lot) of thinking, the program will spit out the file you wanted.
 
 ## Deployment
 
