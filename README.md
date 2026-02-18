@@ -4,7 +4,7 @@ bun install
 bunx vite)
 ## Usage
 
-1. Go to [convert.to.it](https://convert.to.it/)
+1. Go to use instructions below.
 2. Click the big blue box to add your file (or just drag it on to the window).
 3. An input format should have been automatically selected. If it wasn't, yikes! Try searching for it, or if it's really not there, see the "Issues" section below.
 4. Select an output format from the second list. If you're on desktop, that's the one on the right side. If you're on mobile, it'll be somewhere lower down.
